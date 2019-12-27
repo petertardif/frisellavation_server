@@ -4,6 +4,7 @@ type Quote {
   url: String!
   tag: String!
   postedBy: User
+  likes: [Like!]!
 }
 
 type User {
@@ -13,4 +14,11 @@ type User {
   email: String! @unique
   password: String!
   quotes: [Quote!]!
+  likes: [Like!]!
+}
+
+type Like {
+  id: ID! @id
+  quote: Quote!
+  user: User!
 }

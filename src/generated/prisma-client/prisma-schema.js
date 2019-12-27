@@ -3,7 +3,11 @@ module.exports = {
   // Please don't change this file manually but run `prisma generate` to update it.
   // For more information, please read the docs: https://www.prisma.io/docs/prisma-client/
 
-/* GraphQL */ `type AggregateQuote {
+/* GraphQL */ `type AggregateLike {
+  count: Int!
+}
+
+type AggregateQuote {
   count: Int!
 }
 
@@ -17,9 +21,187 @@ type BatchPayload {
 
 scalar DateTime
 
+type Like {
+  id: ID!
+  quote: Quote!
+  user: User!
+}
+
+type LikeConnection {
+  pageInfo: PageInfo!
+  edges: [LikeEdge]!
+  aggregate: AggregateLike!
+}
+
+input LikeCreateInput {
+  id: ID
+  quote: QuoteCreateOneWithoutLikesInput!
+  user: UserCreateOneWithoutLikesInput!
+}
+
+input LikeCreateManyWithoutQuoteInput {
+  create: [LikeCreateWithoutQuoteInput!]
+  connect: [LikeWhereUniqueInput!]
+}
+
+input LikeCreateManyWithoutUserInput {
+  create: [LikeCreateWithoutUserInput!]
+  connect: [LikeWhereUniqueInput!]
+}
+
+input LikeCreateWithoutQuoteInput {
+  id: ID
+  user: UserCreateOneWithoutLikesInput!
+}
+
+input LikeCreateWithoutUserInput {
+  id: ID
+  quote: QuoteCreateOneWithoutLikesInput!
+}
+
+type LikeEdge {
+  node: Like!
+  cursor: String!
+}
+
+enum LikeOrderByInput {
+  id_ASC
+  id_DESC
+}
+
+type LikePreviousValues {
+  id: ID!
+}
+
+input LikeScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  AND: [LikeScalarWhereInput!]
+  OR: [LikeScalarWhereInput!]
+  NOT: [LikeScalarWhereInput!]
+}
+
+type LikeSubscriptionPayload {
+  mutation: MutationType!
+  node: Like
+  updatedFields: [String!]
+  previousValues: LikePreviousValues
+}
+
+input LikeSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: LikeWhereInput
+  AND: [LikeSubscriptionWhereInput!]
+  OR: [LikeSubscriptionWhereInput!]
+  NOT: [LikeSubscriptionWhereInput!]
+}
+
+input LikeUpdateInput {
+  quote: QuoteUpdateOneRequiredWithoutLikesInput
+  user: UserUpdateOneRequiredWithoutLikesInput
+}
+
+input LikeUpdateManyWithoutQuoteInput {
+  create: [LikeCreateWithoutQuoteInput!]
+  delete: [LikeWhereUniqueInput!]
+  connect: [LikeWhereUniqueInput!]
+  set: [LikeWhereUniqueInput!]
+  disconnect: [LikeWhereUniqueInput!]
+  update: [LikeUpdateWithWhereUniqueWithoutQuoteInput!]
+  upsert: [LikeUpsertWithWhereUniqueWithoutQuoteInput!]
+  deleteMany: [LikeScalarWhereInput!]
+}
+
+input LikeUpdateManyWithoutUserInput {
+  create: [LikeCreateWithoutUserInput!]
+  delete: [LikeWhereUniqueInput!]
+  connect: [LikeWhereUniqueInput!]
+  set: [LikeWhereUniqueInput!]
+  disconnect: [LikeWhereUniqueInput!]
+  update: [LikeUpdateWithWhereUniqueWithoutUserInput!]
+  upsert: [LikeUpsertWithWhereUniqueWithoutUserInput!]
+  deleteMany: [LikeScalarWhereInput!]
+}
+
+input LikeUpdateWithoutQuoteDataInput {
+  user: UserUpdateOneRequiredWithoutLikesInput
+}
+
+input LikeUpdateWithoutUserDataInput {
+  quote: QuoteUpdateOneRequiredWithoutLikesInput
+}
+
+input LikeUpdateWithWhereUniqueWithoutQuoteInput {
+  where: LikeWhereUniqueInput!
+  data: LikeUpdateWithoutQuoteDataInput!
+}
+
+input LikeUpdateWithWhereUniqueWithoutUserInput {
+  where: LikeWhereUniqueInput!
+  data: LikeUpdateWithoutUserDataInput!
+}
+
+input LikeUpsertWithWhereUniqueWithoutQuoteInput {
+  where: LikeWhereUniqueInput!
+  update: LikeUpdateWithoutQuoteDataInput!
+  create: LikeCreateWithoutQuoteInput!
+}
+
+input LikeUpsertWithWhereUniqueWithoutUserInput {
+  where: LikeWhereUniqueInput!
+  update: LikeUpdateWithoutUserDataInput!
+  create: LikeCreateWithoutUserInput!
+}
+
+input LikeWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  quote: QuoteWhereInput
+  user: UserWhereInput
+  AND: [LikeWhereInput!]
+  OR: [LikeWhereInput!]
+  NOT: [LikeWhereInput!]
+}
+
+input LikeWhereUniqueInput {
+  id: ID
+}
+
 scalar Long
 
 type Mutation {
+  createLike(data: LikeCreateInput!): Like!
+  updateLike(data: LikeUpdateInput!, where: LikeWhereUniqueInput!): Like
+  upsertLike(where: LikeWhereUniqueInput!, create: LikeCreateInput!, update: LikeUpdateInput!): Like!
+  deleteLike(where: LikeWhereUniqueInput!): Like
+  deleteManyLikes(where: LikeWhereInput): BatchPayload!
   createQuote(data: QuoteCreateInput!): Quote!
   updateQuote(data: QuoteUpdateInput!, where: QuoteWhereUniqueInput!): Quote
   updateManyQuotes(data: QuoteUpdateManyMutationInput!, where: QuoteWhereInput): BatchPayload!
@@ -52,6 +234,9 @@ type PageInfo {
 }
 
 type Query {
+  like(where: LikeWhereUniqueInput!): Like
+  likes(where: LikeWhereInput, orderBy: LikeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Like]!
+  likesConnection(where: LikeWhereInput, orderBy: LikeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): LikeConnection!
   quote(where: QuoteWhereUniqueInput!): Quote
   quotes(where: QuoteWhereInput, orderBy: QuoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Quote]!
   quotesConnection(where: QuoteWhereInput, orderBy: QuoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): QuoteConnection!
@@ -67,6 +252,7 @@ type Quote {
   url: String!
   tag: String!
   postedBy: User
+  likes(where: LikeWhereInput, orderBy: LikeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Like!]
 }
 
 type QuoteConnection {
@@ -80,6 +266,7 @@ input QuoteCreateInput {
   url: String!
   tag: String!
   postedBy: UserCreateOneWithoutQuotesInput
+  likes: LikeCreateManyWithoutQuoteInput
 }
 
 input QuoteCreateManyWithoutPostedByInput {
@@ -87,10 +274,23 @@ input QuoteCreateManyWithoutPostedByInput {
   connect: [QuoteWhereUniqueInput!]
 }
 
+input QuoteCreateOneWithoutLikesInput {
+  create: QuoteCreateWithoutLikesInput
+  connect: QuoteWhereUniqueInput
+}
+
+input QuoteCreateWithoutLikesInput {
+  id: ID
+  url: String!
+  tag: String!
+  postedBy: UserCreateOneWithoutQuotesInput
+}
+
 input QuoteCreateWithoutPostedByInput {
   id: ID
   url: String!
   tag: String!
+  likes: LikeCreateManyWithoutQuoteInput
 }
 
 type QuoteEdge {
@@ -194,6 +394,7 @@ input QuoteUpdateInput {
   url: String
   tag: String
   postedBy: UserUpdateOneWithoutQuotesInput
+  likes: LikeUpdateManyWithoutQuoteInput
 }
 
 input QuoteUpdateManyDataInput {
@@ -223,14 +424,33 @@ input QuoteUpdateManyWithWhereNestedInput {
   data: QuoteUpdateManyDataInput!
 }
 
+input QuoteUpdateOneRequiredWithoutLikesInput {
+  create: QuoteCreateWithoutLikesInput
+  update: QuoteUpdateWithoutLikesDataInput
+  upsert: QuoteUpsertWithoutLikesInput
+  connect: QuoteWhereUniqueInput
+}
+
+input QuoteUpdateWithoutLikesDataInput {
+  url: String
+  tag: String
+  postedBy: UserUpdateOneWithoutQuotesInput
+}
+
 input QuoteUpdateWithoutPostedByDataInput {
   url: String
   tag: String
+  likes: LikeUpdateManyWithoutQuoteInput
 }
 
 input QuoteUpdateWithWhereUniqueWithoutPostedByInput {
   where: QuoteWhereUniqueInput!
   data: QuoteUpdateWithoutPostedByDataInput!
+}
+
+input QuoteUpsertWithoutLikesInput {
+  update: QuoteUpdateWithoutLikesDataInput!
+  create: QuoteCreateWithoutLikesInput!
 }
 
 input QuoteUpsertWithWhereUniqueWithoutPostedByInput {
@@ -291,6 +511,9 @@ input QuoteWhereInput {
   tag_ends_with: String
   tag_not_ends_with: String
   postedBy: UserWhereInput
+  likes_every: LikeWhereInput
+  likes_some: LikeWhereInput
+  likes_none: LikeWhereInput
   AND: [QuoteWhereInput!]
   OR: [QuoteWhereInput!]
   NOT: [QuoteWhereInput!]
@@ -301,6 +524,7 @@ input QuoteWhereUniqueInput {
 }
 
 type Subscription {
+  like(where: LikeSubscriptionWhereInput): LikeSubscriptionPayload
   quote(where: QuoteSubscriptionWhereInput): QuoteSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
@@ -312,6 +536,7 @@ type User {
   email: String!
   password: String!
   quotes(where: QuoteWhereInput, orderBy: QuoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Quote!]
+  likes(where: LikeWhereInput, orderBy: LikeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Like!]
 }
 
 type UserConnection {
@@ -327,11 +552,26 @@ input UserCreateInput {
   email: String!
   password: String!
   quotes: QuoteCreateManyWithoutPostedByInput
+  likes: LikeCreateManyWithoutUserInput
+}
+
+input UserCreateOneWithoutLikesInput {
+  create: UserCreateWithoutLikesInput
+  connect: UserWhereUniqueInput
 }
 
 input UserCreateOneWithoutQuotesInput {
   create: UserCreateWithoutQuotesInput
   connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutLikesInput {
+  id: ID
+  last_name: String!
+  first_name: String!
+  email: String!
+  password: String!
+  quotes: QuoteCreateManyWithoutPostedByInput
 }
 
 input UserCreateWithoutQuotesInput {
@@ -340,6 +580,7 @@ input UserCreateWithoutQuotesInput {
   first_name: String!
   email: String!
   password: String!
+  likes: LikeCreateManyWithoutUserInput
 }
 
 type UserEdge {
@@ -392,6 +633,7 @@ input UserUpdateInput {
   email: String
   password: String
   quotes: QuoteUpdateManyWithoutPostedByInput
+  likes: LikeUpdateManyWithoutUserInput
 }
 
 input UserUpdateManyMutationInput {
@@ -399,6 +641,13 @@ input UserUpdateManyMutationInput {
   first_name: String
   email: String
   password: String
+}
+
+input UserUpdateOneRequiredWithoutLikesInput {
+  create: UserCreateWithoutLikesInput
+  update: UserUpdateWithoutLikesDataInput
+  upsert: UserUpsertWithoutLikesInput
+  connect: UserWhereUniqueInput
 }
 
 input UserUpdateOneWithoutQuotesInput {
@@ -410,11 +659,25 @@ input UserUpdateOneWithoutQuotesInput {
   connect: UserWhereUniqueInput
 }
 
+input UserUpdateWithoutLikesDataInput {
+  last_name: String
+  first_name: String
+  email: String
+  password: String
+  quotes: QuoteUpdateManyWithoutPostedByInput
+}
+
 input UserUpdateWithoutQuotesDataInput {
   last_name: String
   first_name: String
   email: String
   password: String
+  likes: LikeUpdateManyWithoutUserInput
+}
+
+input UserUpsertWithoutLikesInput {
+  update: UserUpdateWithoutLikesDataInput!
+  create: UserCreateWithoutLikesInput!
 }
 
 input UserUpsertWithoutQuotesInput {
@@ -496,6 +759,9 @@ input UserWhereInput {
   quotes_every: QuoteWhereInput
   quotes_some: QuoteWhereInput
   quotes_none: QuoteWhereInput
+  likes_every: LikeWhereInput
+  likes_some: LikeWhereInput
+  likes_none: LikeWhereInput
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]

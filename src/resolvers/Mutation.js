@@ -2,6 +2,23 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { APP_SECRET, getUserId } = require('../utils')
 
+async function like(parent, args, context, info) {
+  const userId = getUserId(context)
+
+  const likeExists = await context.prisma.$exists.like({
+    user: { id: userId },
+    quote: { id: args.quoteId },
+  })
+  if (likeExists) {
+    throw new Error(`You already liked the quote ${args.quoteId}`)
+  }
+
+  return context.prisma.createLike({
+    user: { connect: { id: userId } },
+    quote: { connect: { id: args.quoteId } },
+  })
+}
+
 async function login(parent, args, context, info) {
   const user = await context.prisma.user({ email: args.email })
   if (!user) {
@@ -45,4 +62,5 @@ module.exports = {
   signup,
   login,
   post,
+  like,
 }

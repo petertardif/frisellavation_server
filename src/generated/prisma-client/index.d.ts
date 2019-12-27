@@ -16,6 +16,7 @@ export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
 export type Maybe<T> = T | undefined | null;
 
 export interface Exists {
+  like: (where?: LikeWhereInput) => Promise<boolean>;
   quote: (where?: QuoteWhereInput) => Promise<boolean>;
   user: (where?: UserWhereInput) => Promise<boolean>;
 }
@@ -39,6 +40,25 @@ export interface Prisma {
    * Queries
    */
 
+  like: (where: LikeWhereUniqueInput) => LikeNullablePromise;
+  likes: (args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => FragmentableArray<Like>;
+  likesConnection: (args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => LikeConnectionPromise;
   quote: (where: QuoteWhereUniqueInput) => QuoteNullablePromise;
   quotes: (args?: {
     where?: QuoteWhereInput;
@@ -83,6 +103,18 @@ export interface Prisma {
    * Mutations
    */
 
+  createLike: (data: LikeCreateInput) => LikePromise;
+  updateLike: (args: {
+    data: LikeUpdateInput;
+    where: LikeWhereUniqueInput;
+  }) => LikePromise;
+  upsertLike: (args: {
+    where: LikeWhereUniqueInput;
+    create: LikeCreateInput;
+    update: LikeUpdateInput;
+  }) => LikePromise;
+  deleteLike: (where: LikeWhereUniqueInput) => LikePromise;
+  deleteManyLikes: (where?: LikeWhereInput) => BatchPayloadPromise;
   createQuote: (data: QuoteCreateInput) => QuotePromise;
   updateQuote: (args: {
     data: QuoteUpdateInput;
@@ -124,6 +156,9 @@ export interface Prisma {
 }
 
 export interface Subscription {
+  like: (
+    where?: LikeSubscriptionWhereInput
+  ) => LikeSubscriptionPayloadSubscription;
   quote: (
     where?: QuoteSubscriptionWhereInput
   ) => QuoteSubscriptionPayloadSubscription;
@@ -150,6 +185,8 @@ export type QuoteOrderByInput =
   | "tag_ASC"
   | "tag_DESC";
 
+export type LikeOrderByInput = "id_ASC" | "id_DESC";
+
 export type UserOrderByInput =
   | "id_ASC"
   | "id_DESC"
@@ -164,7 +201,7 @@ export type UserOrderByInput =
 
 export type MutationType = "CREATED" | "UPDATED" | "DELETED";
 
-export type QuoteWhereUniqueInput = AtLeastOne<{
+export type LikeWhereUniqueInput = AtLeastOne<{
   id: Maybe<ID_Input>;
 }>;
 
@@ -220,6 +257,9 @@ export interface QuoteWhereInput {
   tag_ends_with?: Maybe<String>;
   tag_not_ends_with?: Maybe<String>;
   postedBy?: Maybe<UserWhereInput>;
+  likes_every?: Maybe<LikeWhereInput>;
+  likes_some?: Maybe<LikeWhereInput>;
+  likes_none?: Maybe<LikeWhereInput>;
   AND?: Maybe<QuoteWhereInput[] | QuoteWhereInput>;
   OR?: Maybe<QuoteWhereInput[] | QuoteWhereInput>;
   NOT?: Maybe<QuoteWhereInput[] | QuoteWhereInput>;
@@ -299,17 +339,57 @@ export interface UserWhereInput {
   quotes_every?: Maybe<QuoteWhereInput>;
   quotes_some?: Maybe<QuoteWhereInput>;
   quotes_none?: Maybe<QuoteWhereInput>;
+  likes_every?: Maybe<LikeWhereInput>;
+  likes_some?: Maybe<LikeWhereInput>;
+  likes_none?: Maybe<LikeWhereInput>;
   AND?: Maybe<UserWhereInput[] | UserWhereInput>;
   OR?: Maybe<UserWhereInput[] | UserWhereInput>;
   NOT?: Maybe<UserWhereInput[] | UserWhereInput>;
 }
+
+export interface LikeWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  quote?: Maybe<QuoteWhereInput>;
+  user?: Maybe<UserWhereInput>;
+  AND?: Maybe<LikeWhereInput[] | LikeWhereInput>;
+  OR?: Maybe<LikeWhereInput[] | LikeWhereInput>;
+  NOT?: Maybe<LikeWhereInput[] | LikeWhereInput>;
+}
+
+export type QuoteWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
 
 export type UserWhereUniqueInput = AtLeastOne<{
   id: Maybe<ID_Input>;
   email?: Maybe<String>;
 }>;
 
-export interface QuoteCreateInput {
+export interface LikeCreateInput {
+  id?: Maybe<ID_Input>;
+  quote: QuoteCreateOneWithoutLikesInput;
+  user: UserCreateOneWithoutLikesInput;
+}
+
+export interface QuoteCreateOneWithoutLikesInput {
+  create?: Maybe<QuoteCreateWithoutLikesInput>;
+  connect?: Maybe<QuoteWhereUniqueInput>;
+}
+
+export interface QuoteCreateWithoutLikesInput {
   id?: Maybe<ID_Input>;
   url: String;
   tag: String;
@@ -327,41 +407,25 @@ export interface UserCreateWithoutQuotesInput {
   first_name: String;
   email: String;
   password: String;
+  likes?: Maybe<LikeCreateManyWithoutUserInput>;
 }
 
-export interface QuoteUpdateInput {
-  url?: Maybe<String>;
-  tag?: Maybe<String>;
-  postedBy?: Maybe<UserUpdateOneWithoutQuotesInput>;
+export interface LikeCreateManyWithoutUserInput {
+  create?: Maybe<LikeCreateWithoutUserInput[] | LikeCreateWithoutUserInput>;
+  connect?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
 }
 
-export interface UserUpdateOneWithoutQuotesInput {
-  create?: Maybe<UserCreateWithoutQuotesInput>;
-  update?: Maybe<UserUpdateWithoutQuotesDataInput>;
-  upsert?: Maybe<UserUpsertWithoutQuotesInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
+export interface LikeCreateWithoutUserInput {
+  id?: Maybe<ID_Input>;
+  quote: QuoteCreateOneWithoutLikesInput;
+}
+
+export interface UserCreateOneWithoutLikesInput {
+  create?: Maybe<UserCreateWithoutLikesInput>;
   connect?: Maybe<UserWhereUniqueInput>;
 }
 
-export interface UserUpdateWithoutQuotesDataInput {
-  last_name?: Maybe<String>;
-  first_name?: Maybe<String>;
-  email?: Maybe<String>;
-  password?: Maybe<String>;
-}
-
-export interface UserUpsertWithoutQuotesInput {
-  update: UserUpdateWithoutQuotesDataInput;
-  create: UserCreateWithoutQuotesInput;
-}
-
-export interface QuoteUpdateManyMutationInput {
-  url?: Maybe<String>;
-  tag?: Maybe<String>;
-}
-
-export interface UserCreateInput {
+export interface UserCreateWithoutLikesInput {
   id?: Maybe<ID_Input>;
   last_name: String;
   first_name: String;
@@ -381,9 +445,124 @@ export interface QuoteCreateWithoutPostedByInput {
   id?: Maybe<ID_Input>;
   url: String;
   tag: String;
+  likes?: Maybe<LikeCreateManyWithoutQuoteInput>;
 }
 
-export interface UserUpdateInput {
+export interface LikeCreateManyWithoutQuoteInput {
+  create?: Maybe<LikeCreateWithoutQuoteInput[] | LikeCreateWithoutQuoteInput>;
+  connect?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+}
+
+export interface LikeCreateWithoutQuoteInput {
+  id?: Maybe<ID_Input>;
+  user: UserCreateOneWithoutLikesInput;
+}
+
+export interface LikeUpdateInput {
+  quote?: Maybe<QuoteUpdateOneRequiredWithoutLikesInput>;
+  user?: Maybe<UserUpdateOneRequiredWithoutLikesInput>;
+}
+
+export interface QuoteUpdateOneRequiredWithoutLikesInput {
+  create?: Maybe<QuoteCreateWithoutLikesInput>;
+  update?: Maybe<QuoteUpdateWithoutLikesDataInput>;
+  upsert?: Maybe<QuoteUpsertWithoutLikesInput>;
+  connect?: Maybe<QuoteWhereUniqueInput>;
+}
+
+export interface QuoteUpdateWithoutLikesDataInput {
+  url?: Maybe<String>;
+  tag?: Maybe<String>;
+  postedBy?: Maybe<UserUpdateOneWithoutQuotesInput>;
+}
+
+export interface UserUpdateOneWithoutQuotesInput {
+  create?: Maybe<UserCreateWithoutQuotesInput>;
+  update?: Maybe<UserUpdateWithoutQuotesDataInput>;
+  upsert?: Maybe<UserUpsertWithoutQuotesInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface UserUpdateWithoutQuotesDataInput {
+  last_name?: Maybe<String>;
+  first_name?: Maybe<String>;
+  email?: Maybe<String>;
+  password?: Maybe<String>;
+  likes?: Maybe<LikeUpdateManyWithoutUserInput>;
+}
+
+export interface LikeUpdateManyWithoutUserInput {
+  create?: Maybe<LikeCreateWithoutUserInput[] | LikeCreateWithoutUserInput>;
+  delete?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  connect?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  set?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  disconnect?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  update?: Maybe<
+    | LikeUpdateWithWhereUniqueWithoutUserInput[]
+    | LikeUpdateWithWhereUniqueWithoutUserInput
+  >;
+  upsert?: Maybe<
+    | LikeUpsertWithWhereUniqueWithoutUserInput[]
+    | LikeUpsertWithWhereUniqueWithoutUserInput
+  >;
+  deleteMany?: Maybe<LikeScalarWhereInput[] | LikeScalarWhereInput>;
+}
+
+export interface LikeUpdateWithWhereUniqueWithoutUserInput {
+  where: LikeWhereUniqueInput;
+  data: LikeUpdateWithoutUserDataInput;
+}
+
+export interface LikeUpdateWithoutUserDataInput {
+  quote?: Maybe<QuoteUpdateOneRequiredWithoutLikesInput>;
+}
+
+export interface LikeUpsertWithWhereUniqueWithoutUserInput {
+  where: LikeWhereUniqueInput;
+  update: LikeUpdateWithoutUserDataInput;
+  create: LikeCreateWithoutUserInput;
+}
+
+export interface LikeScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  AND?: Maybe<LikeScalarWhereInput[] | LikeScalarWhereInput>;
+  OR?: Maybe<LikeScalarWhereInput[] | LikeScalarWhereInput>;
+  NOT?: Maybe<LikeScalarWhereInput[] | LikeScalarWhereInput>;
+}
+
+export interface UserUpsertWithoutQuotesInput {
+  update: UserUpdateWithoutQuotesDataInput;
+  create: UserCreateWithoutQuotesInput;
+}
+
+export interface QuoteUpsertWithoutLikesInput {
+  update: QuoteUpdateWithoutLikesDataInput;
+  create: QuoteCreateWithoutLikesInput;
+}
+
+export interface UserUpdateOneRequiredWithoutLikesInput {
+  create?: Maybe<UserCreateWithoutLikesInput>;
+  update?: Maybe<UserUpdateWithoutLikesDataInput>;
+  upsert?: Maybe<UserUpsertWithoutLikesInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface UserUpdateWithoutLikesDataInput {
   last_name?: Maybe<String>;
   first_name?: Maybe<String>;
   email?: Maybe<String>;
@@ -421,6 +600,39 @@ export interface QuoteUpdateWithWhereUniqueWithoutPostedByInput {
 export interface QuoteUpdateWithoutPostedByDataInput {
   url?: Maybe<String>;
   tag?: Maybe<String>;
+  likes?: Maybe<LikeUpdateManyWithoutQuoteInput>;
+}
+
+export interface LikeUpdateManyWithoutQuoteInput {
+  create?: Maybe<LikeCreateWithoutQuoteInput[] | LikeCreateWithoutQuoteInput>;
+  delete?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  connect?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  set?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  disconnect?: Maybe<LikeWhereUniqueInput[] | LikeWhereUniqueInput>;
+  update?: Maybe<
+    | LikeUpdateWithWhereUniqueWithoutQuoteInput[]
+    | LikeUpdateWithWhereUniqueWithoutQuoteInput
+  >;
+  upsert?: Maybe<
+    | LikeUpsertWithWhereUniqueWithoutQuoteInput[]
+    | LikeUpsertWithWhereUniqueWithoutQuoteInput
+  >;
+  deleteMany?: Maybe<LikeScalarWhereInput[] | LikeScalarWhereInput>;
+}
+
+export interface LikeUpdateWithWhereUniqueWithoutQuoteInput {
+  where: LikeWhereUniqueInput;
+  data: LikeUpdateWithoutQuoteDataInput;
+}
+
+export interface LikeUpdateWithoutQuoteDataInput {
+  user?: Maybe<UserUpdateOneRequiredWithoutLikesInput>;
+}
+
+export interface LikeUpsertWithWhereUniqueWithoutQuoteInput {
+  where: LikeWhereUniqueInput;
+  update: LikeUpdateWithoutQuoteDataInput;
+  create: LikeCreateWithoutQuoteInput;
 }
 
 export interface QuoteUpsertWithWhereUniqueWithoutPostedByInput {
@@ -495,11 +707,66 @@ export interface QuoteUpdateManyDataInput {
   tag?: Maybe<String>;
 }
 
+export interface UserUpsertWithoutLikesInput {
+  update: UserUpdateWithoutLikesDataInput;
+  create: UserCreateWithoutLikesInput;
+}
+
+export interface QuoteCreateInput {
+  id?: Maybe<ID_Input>;
+  url: String;
+  tag: String;
+  postedBy?: Maybe<UserCreateOneWithoutQuotesInput>;
+  likes?: Maybe<LikeCreateManyWithoutQuoteInput>;
+}
+
+export interface QuoteUpdateInput {
+  url?: Maybe<String>;
+  tag?: Maybe<String>;
+  postedBy?: Maybe<UserUpdateOneWithoutQuotesInput>;
+  likes?: Maybe<LikeUpdateManyWithoutQuoteInput>;
+}
+
+export interface QuoteUpdateManyMutationInput {
+  url?: Maybe<String>;
+  tag?: Maybe<String>;
+}
+
+export interface UserCreateInput {
+  id?: Maybe<ID_Input>;
+  last_name: String;
+  first_name: String;
+  email: String;
+  password: String;
+  quotes?: Maybe<QuoteCreateManyWithoutPostedByInput>;
+  likes?: Maybe<LikeCreateManyWithoutUserInput>;
+}
+
+export interface UserUpdateInput {
+  last_name?: Maybe<String>;
+  first_name?: Maybe<String>;
+  email?: Maybe<String>;
+  password?: Maybe<String>;
+  quotes?: Maybe<QuoteUpdateManyWithoutPostedByInput>;
+  likes?: Maybe<LikeUpdateManyWithoutUserInput>;
+}
+
 export interface UserUpdateManyMutationInput {
   last_name?: Maybe<String>;
   first_name?: Maybe<String>;
   email?: Maybe<String>;
   password?: Maybe<String>;
+}
+
+export interface LikeSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<LikeWhereInput>;
+  AND?: Maybe<LikeSubscriptionWhereInput[] | LikeSubscriptionWhereInput>;
+  OR?: Maybe<LikeSubscriptionWhereInput[] | LikeSubscriptionWhereInput>;
+  NOT?: Maybe<LikeSubscriptionWhereInput[] | LikeSubscriptionWhereInput>;
 }
 
 export interface QuoteSubscriptionWhereInput {
@@ -528,6 +795,32 @@ export interface NodeNode {
   id: ID_Output;
 }
 
+export interface Like {
+  id: ID_Output;
+}
+
+export interface LikePromise extends Promise<Like>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  quote: <T = QuotePromise>() => T;
+  user: <T = UserPromise>() => T;
+}
+
+export interface LikeSubscription
+  extends Promise<AsyncIterator<Like>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  quote: <T = QuoteSubscription>() => T;
+  user: <T = UserSubscription>() => T;
+}
+
+export interface LikeNullablePromise
+  extends Promise<Like | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  quote: <T = QuotePromise>() => T;
+  user: <T = UserPromise>() => T;
+}
+
 export interface Quote {
   id: ID_Output;
   createdAt: DateTimeOutput;
@@ -541,6 +834,15 @@ export interface QuotePromise extends Promise<Quote>, Fragmentable {
   url: () => Promise<String>;
   tag: () => Promise<String>;
   postedBy: <T = UserPromise>() => T;
+  likes: <T = FragmentableArray<Like>>(args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
 }
 
 export interface QuoteSubscription
@@ -551,6 +853,15 @@ export interface QuoteSubscription
   url: () => Promise<AsyncIterator<String>>;
   tag: () => Promise<AsyncIterator<String>>;
   postedBy: <T = UserSubscription>() => T;
+  likes: <T = Promise<AsyncIterator<LikeSubscription>>>(args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
 }
 
 export interface QuoteNullablePromise
@@ -561,6 +872,15 @@ export interface QuoteNullablePromise
   url: () => Promise<String>;
   tag: () => Promise<String>;
   postedBy: <T = UserPromise>() => T;
+  likes: <T = FragmentableArray<Like>>(args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
 }
 
 export interface User {
@@ -586,6 +906,15 @@ export interface UserPromise extends Promise<User>, Fragmentable {
     first?: Int;
     last?: Int;
   }) => T;
+  likes: <T = FragmentableArray<Like>>(args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
 }
 
 export interface UserSubscription
@@ -599,6 +928,15 @@ export interface UserSubscription
   quotes: <T = Promise<AsyncIterator<QuoteSubscription>>>(args?: {
     where?: QuoteWhereInput;
     orderBy?: QuoteOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  likes: <T = Promise<AsyncIterator<LikeSubscription>>>(args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
     skip?: Int;
     after?: String;
     before?: String;
@@ -624,27 +962,36 @@ export interface UserNullablePromise
     first?: Int;
     last?: Int;
   }) => T;
+  likes: <T = FragmentableArray<Like>>(args?: {
+    where?: LikeWhereInput;
+    orderBy?: LikeOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
 }
 
-export interface QuoteConnection {
+export interface LikeConnection {
   pageInfo: PageInfo;
-  edges: QuoteEdge[];
+  edges: LikeEdge[];
 }
 
-export interface QuoteConnectionPromise
-  extends Promise<QuoteConnection>,
+export interface LikeConnectionPromise
+  extends Promise<LikeConnection>,
     Fragmentable {
   pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<QuoteEdge>>() => T;
-  aggregate: <T = AggregateQuotePromise>() => T;
+  edges: <T = FragmentableArray<LikeEdge>>() => T;
+  aggregate: <T = AggregateLikePromise>() => T;
 }
 
-export interface QuoteConnectionSubscription
-  extends Promise<AsyncIterator<QuoteConnection>>,
+export interface LikeConnectionSubscription
+  extends Promise<AsyncIterator<LikeConnection>>,
     Fragmentable {
   pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<QuoteEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateQuoteSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<LikeEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateLikeSubscription>() => T;
 }
 
 export interface PageInfo {
@@ -668,6 +1015,60 @@ export interface PageInfoSubscription
   hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
   startCursor: () => Promise<AsyncIterator<String>>;
   endCursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface LikeEdge {
+  node: Like;
+  cursor: String;
+}
+
+export interface LikeEdgePromise extends Promise<LikeEdge>, Fragmentable {
+  node: <T = LikePromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface LikeEdgeSubscription
+  extends Promise<AsyncIterator<LikeEdge>>,
+    Fragmentable {
+  node: <T = LikeSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateLike {
+  count: Int;
+}
+
+export interface AggregateLikePromise
+  extends Promise<AggregateLike>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateLikeSubscription
+  extends Promise<AsyncIterator<AggregateLike>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface QuoteConnection {
+  pageInfo: PageInfo;
+  edges: QuoteEdge[];
+}
+
+export interface QuoteConnectionPromise
+  extends Promise<QuoteConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<QuoteEdge>>() => T;
+  aggregate: <T = AggregateQuotePromise>() => T;
+}
+
+export interface QuoteConnectionSubscription
+  extends Promise<AsyncIterator<QuoteConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<QuoteEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateQuoteSubscription>() => T;
 }
 
 export interface QuoteEdge {
@@ -771,6 +1172,47 @@ export interface BatchPayloadSubscription
   extends Promise<AsyncIterator<BatchPayload>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Long>>;
+}
+
+export interface LikeSubscriptionPayload {
+  mutation: MutationType;
+  node: Like;
+  updatedFields: String[];
+  previousValues: LikePreviousValues;
+}
+
+export interface LikeSubscriptionPayloadPromise
+  extends Promise<LikeSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = LikePromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = LikePreviousValuesPromise>() => T;
+}
+
+export interface LikeSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<LikeSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = LikeSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = LikePreviousValuesSubscription>() => T;
+}
+
+export interface LikePreviousValues {
+  id: ID_Output;
+}
+
+export interface LikePreviousValuesPromise
+  extends Promise<LikePreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+}
+
+export interface LikePreviousValuesSubscription
+  extends Promise<AsyncIterator<LikePreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
 }
 
 export interface QuoteSubscriptionPayload {
@@ -920,6 +1362,10 @@ export const models: Model[] = [
   },
   {
     name: "User",
+    embedded: false
+  },
+  {
+    name: "Like",
     embedded: false
   }
 ];

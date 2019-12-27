@@ -1,11 +1,16 @@
 type Query {
-  feed: [Quote!]
+  feed(filter: String, orderBy: LinkOrderByInput): Feed!
 }
 
 type Mutation {
   post(url: String!, tag: String!): Quote!
   signup(email: String!, password: String!, first_name: String!, last_name: String!): AuthPayload
   login(email: String!, password: String!): AuthPayload
+  like(quoteId: ID!): Like
+}
+
+type Subscription {
+  newLike: Like
 }
 
 type AuthPayload {
@@ -13,11 +18,17 @@ type AuthPayload {
   user: User
 }
 
+type Feed {
+  quotes: [Quote!]!
+  count: Int!
+}
+
 type Quote {
   id: ID!
   tag: String!
   url: String!
   postedBy: User
+  likes: [Like!]!
 }
 
 type User {
@@ -26,4 +37,17 @@ type User {
   last_name: String!
   email: String!
   quotes: [Quote!]!
+}
+
+type Like {
+  id: ID!
+  quote: Quote!
+  user: User!
+}
+
+enum LinkOrderByInput {
+  tag_ASC
+  tag_DESC
+  createdAt_ASC
+  createdAt_DESC
 }
