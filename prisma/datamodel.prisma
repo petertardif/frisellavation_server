@@ -1,0 +1,16 @@
+type Quote {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  url: String!
+  tag: String!
+  postedBy: User
+}
+
+type User {
+  id: ID! @id
+  last_name: String!
+  first_name: String!
+  email: String! @unique
+  password: String!
+  quotes: [Quote!]!
+}
